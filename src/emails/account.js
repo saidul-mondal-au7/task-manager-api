@@ -26,10 +26,3 @@ module.exports = {
     sendGoodbyMail
 
 }
-
-// sgMail.send({
-//     to:'bibiasem007@gmail.com',
-//     from:'mondalsaidul3232@gmail.com',
-//     subject:'This is my first creation!',
-//     text:'I hope this one acctually get to you'
-// })
