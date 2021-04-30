@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const validator = require('validator')
 const bcryptjs = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const Task = require('./task')
 
 const userSchema = new mongoose.Schema({
     name:{
@@ -27,20 +26,16 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
         trim:true,
-        minlength:7,
+        minlength:4,
         validate(value){
             if(value.toLowerCase().includes('password')){
                 throw new Error('Password cannot contain "password"')
             }
         }
     },
-    age:{
-        type:Number,
-        validate(value){
-           if(value<0){
-               throw new Error('age must be a positive number!')
-           }
-        }
+    address:{
+        type:String,
+        trim:true
     },
     tokens:[{
         token:{
@@ -55,22 +50,16 @@ const userSchema = new mongoose.Schema({
     timestamps:true
 })
 
-userSchema.virtual('myTask',{
-    ref:'Task',
-    localField:'_id',
-    foreignField:'owner'
-})
+// userSchema.methods.toJSON = function(){
+//     const user = this
+//     const userObject = user.toObject()
 
-userSchema.methods.toJSON = function(){
-    const user = this
-    const userObject = user.toObject()
+//     delete userObject.password
+//     delete userObject.tokens
+//     delete userObject.avatar
 
-    delete userObject.password
-    delete userObject.tokens
-    delete userObject.avatar
-
-    return userObject
-}
+//     return userObject
+// }
 
 userSchema.methods.generateAuthToken = async function(){
     const user = this
@@ -105,25 +94,6 @@ userSchema.pre('save', async function(next){
     next()
 })
 
-userSchema.pre('remove',async function(next){
-     const user = this
-     await Task.deleteMany({owner:user._id})
-     next()
-})
-
 const User = mongoose.model('User',userSchema)
-
-// const me = new User({
-//     name:'Ishu',
-//     email:'Mondal@gamil.com ',
-//     password:'ishu123',
-//     age:3
-// })
-
-// me.save().then((result)=>{
-//     console.log(result)
-// }).catch((error)=>{
-//     console.log('Error!',console.error)
-// });
 
 module.exports=User
